@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>归自己</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#f5f2ee;color:#2c2a28;font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:#faf8f5;position:relative;padding-bottom:74px}
+header{padding:18px 18px 8px}
+.h-title{font-size:20px;font-weight:600;letter-spacing:.5px}
+.h-sub{font-size:12px;color:#9a928a;margin-top:2px}
+main{padding:0 14px}
+.tab{display:none}.tab.on{display:block}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.q{font-size:15px;font-weight:600;margin-bottom:10px}
+.hint{font-size:12.5px;color:#9a928a;margin-top:8px}
+.muted{color:#9a928a;font-size:12.5px}
+.row2{display:flex;gap:10px}
+.row3{display:flex;gap:8px}
+.pick{flex:1;padding:14px 0;border:1.5px solid #e3ddd5;border-radius:12px;background:#fff;font-size:15px;color:#5c554e;cursor:pointer}
+.pick.sm{padding:10px 0;font-size:14px}
+.pick.on{background:#f0e6dc;border-color:#d9a87c;color:#8a5a2b;font-weight:600}
+.btn{width:100%;padding:13px 0;border:none;border-radius:12px;font-size:15px;cursor:pointer;background:#f0e6dc;color:#8a5a2b;font-weight:600}
+.btn-accent{background:#e8b98a;color:#fff}
+.btn-line{background:#fff;border:1.5px solid #e3ddd5;color:#7a7268;font-weight:500}
+.btn-sm{padding:9px 0;font-size:13.5px;width:auto;padding-left:16px;padding-right:16px}
+.btn-row{display:flex;gap:10px;margin-top:12px}
+.btn-row .btn{flex:1}
+.result-pill{display:inline-block;padding:7px 14px;border-radius:20px;background:#f0e6dc;color:#8a5a2b;font-size:14px;font-weight:600}
+.sec-head{display:flex;align-items:center;margin-bottom:12px}
+.sec-head b{font-size:15px;font-weight:600}
+.sec-head .sp{flex:1}
+.plus{width:28px;height:28px;border-radius:50%;background:#f0e6dc;color:#8a5a2b;border:none;font-size:18px;line-height:1;cursor:pointer}
+.mt{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f2eee9}
+.mt:last-child{border-bottom:none}
+.mt-name{font-size:14.5px;font-weight:500}
+.mt-badge{font-size:11px;color:#a89c8c;background:#f7f3ee;border-radius:6px;padding:1px 6px;margin-left:6px}
+.mt-desc{font-size:12px;color:#a89c8c;margin-top:2px}
+.mt-do{background:#f0e6dc;border:none;color:#8a5a2b;border-radius:9px;padding:6px 13px;font-size:13px;cursor:pointer;font-weight:600}
+.sub{margin:8px 0 10px;background:#fbf7f2;border-radius:10px;padding:10px 12px;font-size:13px;color:#7a7268;display:flex;align-items:center;gap:8px}
+.sub .sp{flex:1}
+.lnk{font-size:12px;color:#b09a86;cursor:pointer}
+.lnk.warn{color:#c98b8b}
+.tabbar{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;background:#fff;border-top:1px solid #efeae4;padding:8px 0 10px;z-index:20}
+.tabbar div{flex:1;text-align:center;font-size:11.5px;color:#a89c8c;cursor:pointer}
+.tabbar div.on{color:#8a5a2b;font-weight:600}
+.tabbar div span{display:block;font-size:18px;margin-bottom:2px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1.5px solid #e3ddd5;border-radius:16px;padding:6px 12px;font-size:13px;color:#7a7268;cursor:pointer;background:#fff}
+.chip.on{background:#f0e6dc;border-color:#d9a87c;color:#8a5a2b;font-weight:600}
+.tag{display:inline-flex;align-items:center;gap:5px;background:#f7f3ee;border-radius:14px;padding:5px 11px;font-size:13px;color:#6b645c;margin:0 6px 6px 0}
+.tag i{font-style:normal;color:#c0b4a6;cursor:pointer;font-size:14px}
+.em-row{display:flex;gap:8px;flex-wrap:wrap}
+.em{width:40px;height:40px;border-radius:50%;border:1.5px solid #e3ddd5;background:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.em.on{border-color:#d9a87c;background:#f0e6dc}
+input[type=text],textarea{width:100%;border:1.5px solid #e3ddd5;border-radius:11px;padding:11px 12px;font-size:14px;font-family:inherit;background:#fff;color:#2c2a28;outline:none}
+textarea{min-height:62px;resize:vertical}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:12.5px;color:#9a928a;margin-bottom:5px}
+.mask{position:fixed;inset:0;background:rgba(40,35,30,.4);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.mask.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:18px 16px 26px}
+.sheet h3{margin:0 0 14px;font-size:16px;font-weight:600}
+.rec-item{display:flex;flex-wrap:wrap;gap:6px;padding:9px 0;border-bottom:1px solid #f4f0eb;font-size:13.5px}
+.rec-item .t{margin-left:auto;color:#a89c8c;font-size:12px}
+.badge{font-size:11px;background:#eef4ec;color:#6f8a63;border-radius:6px;padding:1px 6px;margin-left:5px}
+.badge.no{background:#f7eeee;color:#a57272}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:#4a423b;color:#fff;padding:10px 18px;border-radius:20px;font-size:13.5px;z-index:99;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+.placeholder{text-align:center;padding:50px 20px;color:#a89c8c;font-size:13.5px;line-height:1.9}
+.stat-row{display:flex;gap:8px;margin-top:12px}
+.stat{flex:1;background:#fbf7f2;border-radius:11px;padding:10px;text-align:center}
+.stat b{display:block;font-size:19px;color:#8a5a2b}
+.stat span{font-size:11.5px;color:#a89c8c}
+.secbar{display:flex;gap:8px;margin-bottom:12px}
+.secbar div{flex:1;text-align:center;padding:8px 0;border-radius:10px;font-size:13.5px;background:#fff;color:#8a8279;cursor:pointer;border:1.5px solid transparent}
+.secbar div.on{background:#f0e6dc;color:#8a5a2b;font-weight:600;border-color:#e0cdb8}
+.mini{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.mini div{padding:6px 13px;border-radius:9px;background:#fff;font-size:13px;color:#8a8279;cursor:pointer;border:1.5px solid #efeae4}
+.mini div.on{background:#f0e6dc;color:#8a5a2b;font-weight:600;border-color:#e0cdb8}
+hr{border:none;border-top:1px solid #f2eee9;margin:14px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="h-title">归自己</div>
+    <div class="h-sub" id="headSub"></div>
+  </header>
+  <main>
+    <!-- 首页 -->
+    <section class="tab on" id="tab-home">
+      <div class="card">
+        <div class="q">想念记录</div>
+        <div class="muted" id="missCount" style="margin-bottom:10px"></div>
+        <div id="missCard"></div>
+      </div>
+      <div class="card">
+        <div class="sec-head"><b>我的事</b><span class="sp"></span><span class="muted" id="mtCount"></span><button class="plus" style="margin-left:8px" onclick="openAddMt()">＋</button></div>
+        <div id="mtList"></div>
+        <div style="margin-top:12px">
+          <button class="btn btn-line btn-sm" style="width:100%" id="mtExpand" onclick="toggleExpand()"></button>
+        </div>
+        <div style="height:8px"></div>
+        <button class="btn btn-line btn-sm" style="width:100%" onclick="openAddMt()">＋ 添加我的事</button>
+      </div>
+    </section>
+
+    <!-- 聊聊 -->
+    <section class="tab" id="tab-chat">
+      <div class="card">
+        <div class="placeholder">
+          智能体陪伴 · 预留入口<br><br>
+          这里以后是「忍不住想倾诉」的地方。<br>
+          你说，它听；它不主动翻旧账，<br>
+          只在同样的剧本再次出现时，<br>
+          轻轻把上一次摆到你面前。<br><br>
+          <span style="font-size:12px">（测试阶段未启用）</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 进度 -->
+    <section class="tab" id="tab-prog">
+      <div class="mini">
+        <div id="pgCrave" class="on" onclick="setProg('crave')">想念走势</div>
+        <div id="pgDone" onclick="setProg('done')">做过的事</div>
+      </div>
+      <div id="progBox"></div>
+    </section>
+
+    <!-- 我的 -->
+    <section class="tab" id="tab-me">
+      <div class="card" id="profileCard"></div>
+      <div class="card" id="rolesCard"></div>
+      <div class="card" id="quotesCard"></div>
+      <div class="card">
+        <div class="q">设置</div>
+        <button class="btn btn-line" style="margin-bottom:10px" onclick="exportCSV()">导出 CSV（贴入飞书表）</button>
+        <button class="btn btn-line" style="margin-bottom:10px" onclick="exportAll()">导出全部备份（JSON）</button>
+        <button class="btn btn-line" style="margin-bottom:10px" onclick="$('#impFile').click()">导入备份（换设备用）</button>
+        <button class="btn btn-line danger" style="margin-bottom:10px;color:#c07070" onclick="clearAll()">清空全部数据</button>
+        <div class="muted">数据存在这台设备的浏览器里，换设备或清缓存会丢。建议定期导出备份存到飞书。</div>
+        <hr>
+        <div class="muted">如果持续两周以上严重低落、失眠，或有伤害自己的念头，请务必联系专业帮助：<b style="color:#8a5a2b">全国心理援助热线 12356</b>（24 小时）</div>
+      </div>
+    </section>
+  </main>
+  <nav class="tabbar">
+    <div class="on" onclick="go('home',this)"><span>◦</span>首页</div>
+    <div onclick="go('chat',this)"><span>◌</span>聊聊</div>
+    <div onclick="go('prog',this)"><span>◡</span>进度</div>
+    <div onclick="go('me',this)"><span>◍</span>我的</div>
+  </nav>
+</div>
+
+<div class="mask" id="mask"><div class="sheet" id="sheet"></div></div>
+<input type="file" id="impFile" accept="application/json,.json" style="display:none">
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 存储 ===== */
+const LS_C='gzj_cravings_v3', LS_M='gzj_mythings_v3', LS_E='gzj_events_v3', LS_P='gzj_profile_v3';
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+let cravings=load(LS_C,[]), mythings=load(LS_M,null), events=load(LS_E,[]), profile=load(LS_P,null);
+
+/* 老数据迁移：datetime(ISO) -> ts(本地毫秒) */
+function migrate(){
+  let ch=false;
+  const toTs=v=>{ if(typeof v==='number')return v; if(!v)return Date.now(); const t=new Date(v).getTime(); return isNaN(t)?Date.now():t; };
+  cravings.forEach(c=>{ if(typeof c.ts!=='number'){c.ts=toTs(c.datetime);delete c.datetime;ch=true;} });
+  events.forEach(e=>{ if(typeof e.ts!=='number'){e.ts=toTs(e.datetime);delete e.datetime;ch=true;} });
+  if(ch){save(LS_C,cravings);save(LS_E,events);}
+}
+migrate();
+
+/* 默认种子 */
+if(mythings===null){
+  mythings=[
+    {id:'m1',name:'去打球',cat:'运动',desc:''},
+    {id:'m2',name:'去徒步',cat:'运动',desc:''},
+    {id:'m3',name:'推进一个自己的项目',cat:'学习',desc:''}
+  ];
+  save(LS_M,mythings);
+}
+if(!profile){
+  profile={emoji:'🌱',name:'我',sign:'我在重建自己',roles:[],expects:[],triggers:[],quotes:[]};
+  save(LS_P,profile);
+}
+
+/* ===== 工具（全部按本地时区） ===== */
+const pad=n=>('0'+n).slice(-2);
+const dayKey=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
+const hhmm=ts=>{const d=new Date(ts);return pad(d.getHours())+':'+pad(d.getMinutes());};
+const fmt=ts=>{const d=new Date(ts);return (d.getMonth()+1)+'/'+d.getDate();};
+const fmtFull=ts=>fmt(ts)+' '+hhmm(ts);
+const uid=()=>Date.now()+''+Math.floor(Math.random()*1000);
+const $=s=>document.querySelector(s);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1800);}
+function openSheet(html){$('#sheet').innerHTML=html;$('#mask').classList.add('on');}
+function closeMask(){$('#mask').classList.remove('on');}
+$('#mask').onclick=e=>{if(e.target.id==='mask')closeMask();};
+
+const WK=['周日','周一','周二','周三','周四','周五','周六'];
+function periodKey(ts){
+  const d=new Date(ts);
+  if(curRange==='day')return dayKey(ts);
+  if(curRange==='week'){
+    const onejan=new Date(d.getFullYear(),0,1);
+    const wk=Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7);
+    return d.getFullYear()+'-W'+pad(wk);
+  }
+  return d.getFullYear()+'-'+pad(d.getMonth()+1);
+}
+
+/* ===== 状态 ===== */
+let missSessionId=null, missSel={answer:null,level:null}, editingMiss=false;
+let expandAll=false, curCat='运动', curRange='day', curProg='crave';
+let curEvalId=null, curUseful='', curEdmtId=null, edCat='运动';
+
+/* ===== 导航 ===== */
+function go(t,el){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  $('#tab-'+t).classList.add('on');
+  document.querySelectorAll('.tabbar div').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  if(t==='prog')renderProg();
+  if(t==='me')renderMe();
+}
+
+/* ===== 首页：想念记录（一次会话一条，锁定可改） ===== */
+const LVLTXT={low:'低',mid:'中',high:'高'}, LVLV={low:1,mid:2,high:3};
+function renderMissCard(){
+  const box=$('#missCard');
+  const todayN=cravings.filter(c=>dayKey(c.ts)===dayKey(Date.now())).length;
+  $('#missCount').textContent = todayN? ('今天已记 '+todayN+' 次 · 一天可以记多次，但每次进来只记一条') : '今天还没有记录';
+
+  if(missSessionId===null){
+    let h='<div class="q">想他了吗？</div><div class="row2">'
+      +'<button class="pick'+(missSel.answer==='yes'?' on':'')+'" onclick="pickAns(\'yes\')">想</button>'
+      +'<button class="pick'+(missSel.answer==='no'?' on':'')+'" onclick="pickAns(\'no\')">不想</button></div>';
+    if(missSel.answer==='yes'){
+      h+='<div class="q" style="margin-top:14px">程度？</div><div class="row3">'
+        +['low','mid','high'].map(l=>'<button class="pick sm'+(missSel.level===l?' on':'')+'" onclick="pickLvl(\''+l+'\')">'+LVLTXT[l]+'</button>').join('')
+        +'</div><div style="height:12px"></div>';
+    }
+    box.innerHTML=h;
+    return;
+  }
+  const rec=cravings.find(c=>c.id===missSessionId);
+  if(!rec){missSessionId=null;renderMissCard();return;}
+  const txt=rec.answer==='yes'?('想了 · '+LVLTXT[rec.level]):'没想';
+  box.innerHTML='<div class="result-pill">'+txt+'</div>'
+    +'<div class="hint">'+(rec.answer==='no'?'没想他，是今天自己的选择 ✦':'记下了，就没被它带走 ✦')+'</div>'
+    +'<div class="btn-row"><button class="btn btn-line btn-sm" onclick="editMiss()">修改</button>'
+    +'<button class="btn btn-line btn-sm" onclick="newMiss()">再记一次</button></div>';
+}
+function pickAns(a){
+  if(a==='no'){saveMiss('no',null);return;}
+  missSel={answer:'yes',level:null};renderMissCard();
+}
+function pickLvl(l){saveMiss('yes',l);}
+function saveMiss(answer,level){
+  if(missSessionId!==null&&editingMiss){
+    const rec=cravings.find(c=>c.id===missSessionId);
+    if(rec){rec.answer=answer;rec.level=level;rec.ts=Date.now();save(LS_C,cravings);}
+    editingMiss=false;renderMissCard();toast('已更新为最后一次结果');
+    return;
+  }
+  const id=uid();
+  cravings.push({id,ts:Date.now(),answer,level});
+  save(LS_C,cravings);
+  missSessionId=id;editingMiss=false;missSel={answer:null,level:null};
+  renderMissCard();
+}
+function editMiss(){editingMiss=true;const r=cravings.find(c=>c.id===missSessionId);missSel={answer:r.answer,level:r.level};missSessionId=null;renderMissCard();}
+function newMiss(){missSessionId=null;editingMiss=false;missSel={answer:null,level:null};renderMissCard();}
+
+/* ===== 我的事 ===== */
+const CATS=['运动','学习','社交','独处','新尝试'];
+function itemPending(id){return events.find(e=>e.itemId===id&&e.status==='pending');}
+function pendCount(){return events.filter(e=>e.status==='pending').length;}
+
+function renderHomeMyThings(){
+  const box=$('#mtList');box.innerHTML='';
+  $('#mtCount').textContent=pendCount()+' 件进行中 · 最多同时 3 件';
+  const list=expandAll?mythings:mythings.slice(0,4);
+  if(!mythings.length){box.innerHTML='<div class="muted">还没有「我的事」。添加一件只属于你自己、能把你拉回中心的事。</div>';}
+  list.forEach(m=>{
+    const wrap=document.createElement('div');
+    const row=document.createElement('div');row.className='mt';
+    row.innerHTML='<div style="flex:1"><div class="mt-name">'+esc(m.name)+'<span class="mt-badge">'+m.cat+'</span></div>'
+      +(m.desc?'<div class="mt-desc">'+esc(m.desc)+'</div>':'')+'</div>';
+    const pend=itemPending(m.id);
+    if(!pend){
+      const b=document.createElement('button');b.className='mt-do';b.textContent='做';
+      b.onclick=()=>doThing(m.id);row.appendChild(b);
+    }
+    wrap.appendChild(row);
+    if(pend){
+      const s=document.createElement('div');s.className='sub';
+      s.innerHTML='<span>进行中 · '+fmtFull(pend.ts)+'</span><span class="sp"></span>';
+      const f=document.createElement('span');f.className='lnk';f.textContent='完成';f.onclick=()=>openEval(pend.id);
+      const u=document.createElement('span');u.className='lnk';u.textContent='撤回';u.onclick=()=>undoPending(pend.id);
+      s.appendChild(f);s.appendChild(u);wrap.appendChild(s);
+    }
+    const doneN=events.filter(e=>e.itemId===m.id&&e.status==='done').length;
+    if(doneN){const d=document.createElement('div');d.className='muted';d.style.padding='0 0 8px';d.textContent='已完成 '+doneN+' 次';wrap.appendChild(d);}
+    const bar=document.createElement('div');bar.style.cssText='display:flex;gap:14px;padding:2px 0 8px';
+    const ed=document.createElement('span');ed.className='lnk';ed.textContent='修改';ed.onclick=()=>openEditMt(m.id);bar.appendChild(ed);
+    const dl=document.createElement('span');dl.className='lnk warn';dl.textContent='删除';
+    dl.onclick=()=>{if(confirm('删除「'+m.name+'」及其记录？')){mythings=mythings.filter(x=>x.id!==m.id);events=events.filter(e=>e.itemId!==m.id);save(LS_M,mythings);save(LS_E,events);renderHomeMyThings();}};
+    bar.appendChild(dl);wrap.appendChild(bar);
+    box.appendChild(wrap);
+  });
+  $('#mtExpand').textContent = mythings.length>4 ? (expandAll?('收起（共 '+mythings.length+' 件）'):('展开全部（共 '+mythings.length+' 件）')) : '';
+  $('#mtExpand').style.display = mythings.length>4?'block':'none';
+}
+function toggleExpand(){expandAll=!expandAll;renderHomeMyThings();}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function doThing(id){
+  if(itemPending(id)){toast('这件事已经在进行中了');return;}
+  if(pendCount()>=3){toast('最多同时 3 件，先完成或撤回一件');return;}
+  const m=mythings.find(x=>x.id===id);
+  events.push({id:uid(),itemId:id,itemName:m.name,cat:m.cat,ts:Date.now(),status:'pending'});
+  save(LS_E,events);renderHomeMyThings();toast('开始了，做完记得回来评价');
+}
+function undoPending(eid){events=events.filter(e=>e.id!==eid);save(LS_E,events);renderHomeMyThings();toast('已撤回');}
+function undoDone(eid){
+  const ev=events.find(e=>e.id===eid);
+  if(!ev)return;
+  if(pendCount()>=3){toast('已有 3 件进行中，先撤回一件');return;}
+  ev.status='pending';ev.useful=null;ev.feeling='';save(LS_E,events);
+  renderHomeMyThings();if(curProg==='done')renderProg();toast('已退回进行中');
+}
+function openEval(eid){
+  curEvalId=eid;curUseful='';
+  openSheet('<h3>做完了，感觉如何？</h3>'
+    +'<div class="fld"><label>这件事对你有用吗</label><div class="row2">'
+    +'<button class="pick sm" id="ufYes" onclick="setUseful(\'yes\')">有用</button>'
+    +'<button class="pick sm" id="ufNo" onclick="setUseful(\'no\')">没用</button></div></div>'
+    +'<div class="fld"><label>一句话体会（可不填）</label><textarea id="evFeel" placeholder="例：一个人去也挺好"></textarea></div>'
+    +'<button class="btn btn-accent" onclick="saveEval()">记下</button>'
+    +'<div style="height:8px"></div><button class="btn btn-line" onclick="closeMask()">取消</button>');
+}
+function setUseful(v){curUseful=v;const y=$('#ufYes'),n=$('#ufNo');if(y){y.classList.toggle('on',v==='yes');n.classList.toggle('on',v==='no');}}
+function saveEval(){
+  const ev=events.find(e=>e.id===curEvalId);if(!ev){closeMask();return;}
+  ev.status='done';ev.useful=curUseful||null;ev.feeling=($('#evFeel').value||'').trim();ev.ts=Date.now();
+  save(LS_E,events);closeMask();renderHomeMyThings();toast('记下了：这是你自己做的 ✦');
+}
+
+/* 新增 / 修改 我的事 */
+function openAddMt(){curCat='运动';openMtSheet(null);}
+function openEditMt(id){const m=mythings.find(x=>x.id===id);curEdmtId=id;edCat=m.cat;openMtSheet(m);}
+function openMtSheet(m){
+  const isEd=!!m;
+  openSheet('<h3>'+(isEd?'修改「我的事」':'添加「我的事」')+'</h3>'
+    +'<div class="fld"><label>名称</label><input type="text" id="mtName" placeholder="例：周三晚上去打球" value="'+(isEd?esc(m.name):'')+'"></div>'
+    +'<div class="fld"><label>类型</label><div class="chips" id="edCat">'+CATS.map(c=>'<div class="chip'+(c===(isEd?edCat:curCat)?' on':'')+'" data-v="'+c+'">'+c+'</div>').join('')+'</div></div>'
+    +'<div class="fld"><label>补充一句（可不填）</label><input type="text" id="mtDesc" placeholder="例：想他的时候就去" value="'+(isEd?esc(m.desc||''):'')+'"></div>'
+    +'<button class="btn btn-accent" onclick="saveMyThing()">保存</button>'
+    +'<div style="height:8px"></div><button class="btn btn-line" onclick="closeMask()">取消</button>');
+  document.querySelectorAll('#edCat .chip').forEach(c=>c.onclick=()=>{
+    document.querySelectorAll('#edCat .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');if(isEd)edCat=c.dataset.v;else curCat=c.dataset.v;});
+}
+function saveMyThing(){
+  const name=($('#mtName').value||'').trim();
+  if(!name){toast('给它起个名字吧');return;}
+  const desc=($('#mtDesc').value||'').trim();
+  if(curEdmtId){
+    const m=mythings.find(x=>x.id===curEdmtId);
+    if(m){m.name=name;m.cat=edCat;m.desc=desc;
+      events.filter(e=>e.itemId===m.id).forEach(e=>e.itemName=name);
+      save(LS_M,mythings);save(LS_E,events);}
+    curEdmtId=null;closeMask();renderHomeMyThings();toast('已更新');
+  }else{
+    mythings.unshift({id:uid(),name,cat:curCat,desc,ts:Date.now()});
+    save(LS_M,mythings);closeMask();renderHomeMyThings();toast('已添加：'+name);
+  }
+}
+
+/* ===== 进度 ===== */
+function setProg(p){curProg=p;$('#pgCrave').classList.toggle('on',p==='crave');$('#pgDone').classList.toggle('on',p==='done');renderProg();}
+function renderProg(){
+  const box=$('#progBox');box.innerHTML='';
+  if(curProg==='done')return renderDone(box);
+  const card=document.createElement('div');card.className='card';
+  card.innerHTML='<div class="q">想念走势</div><div class="mini" style="margin:10px 0 14px">'
+    +['day','week','month'].map(r=>'<div class="'+(curRange===r?'on':'')+'" onclick="setRange(\''+r+'\')">'+({day:'日',week:'周',month:'月'}[r])+'</div>').join('')
+    +'</div><div id="chart"></div><div class="stat-row" id="stats"></div>';
+  box.appendChild(card);
+
+  const yes=cravings.filter(c=>c.answer==='yes'), no=cravings.filter(c=>c.answer==='no');
+  const map={};yes.forEach(c=>{const k=periodKey(c.ts);(map[k]=map[k]||[]).push(LVLV[c.level]||1);});
+  let keys=Object.keys(map).sort();
+  const buckets=curRange==='day'?14:curRange==='week'?8:6;
+  const slots=[];const now=new Date();
+  for(let i=buckets-1;i>=0;i--){
+    const d=new Date(now);
+    if(curRange==='day')d.setDate(d.getDate()-i);
+    else if(curRange==='week')d.setDate(d.getDate()-i*7);
+    else d.setMonth(d.getMonth()-i);
+    slots.push(periodKey(d.getTime()));
+  }
+  const uniq=[];slots.forEach(k=>{if(uniq.indexOf(k)<0)uniq.push(k);});
+  keys=uniq;
+  const vals=keys.map(k=>map[k]?+(map[k].reduce((a,b)=>a+b,0)/map[k].length).toFixed(1):null);
+  const nYes=yes.length,nNo=no.length;
+  const avgAll=yes.length?(yes.reduce((a,c)=>a+(LVLV[c.level]||1),0)/yes.length).toFixed(1):'—';
+
+  $('#stats').innerHTML='<div class="stat"><b>'+nYes+'</b><span>想了（次）</span></div>'
+    +'<div class="stat"><b>'+nNo+'</b><span>没想（次）</span></div>'
+    +'<div class="stat"><b>'+avgAll+'</b><span>平均程度</span></div>';
+
+  const W=420,H=130,pad=18;
+  const pts=vals.map((v,i)=>v===null?null:[pad+(W-pad*2)*(keys.length>1?i/(keys.length-1):0.5),H-pad-(v-1)/2*(H-pad*2)]).filter(Boolean);
+  let svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:130px">';
+  [1,2,3].forEach(v=>{const y=H-pad-(v-1)/2*(H-pad*2);
+    svg+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="#f0eae3" stroke-width="1"/>';});
+  if(pts.length>1){
+    svg+='<polyline points="'+pts.map(p=>p[0]+','+p[1]).join(' ')+'" fill="none" stroke="#e0a878" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
+    pts.forEach(p=>{svg+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.4" fill="#e0a878"/>';});
+  }else if(pts.length===1){
+    svg+='<circle cx="'+pts[0][0]+'" cy="'+pts[0][1]+'" r="4" fill="#e0a878"/>';
+  }else{
+    svg+='<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" fill="#c3b9ad" font-size="13">还没有记录</text>';
+  }
+  keys.forEach((k,i)=>{if(keys.length>7&&i%Math.ceil(keys.length/5)!==0&&i!==keys.length-1)return;
+    const x=pad+(W-pad*2)*(keys.length>1?i/(keys.length-1):0.5);
+    const lb=curRange==='day'?k.slice(5):curRange==='week'?k.slice(5)+'周':k.slice(5)+'月';
+    svg+='<text x="'+x+'" y="'+(H-4)+'" text-anchor="middle" fill="#bdae9d" font-size="10">'+lb+'</text>';});
+  svg+='</svg>';
+  $('#chart').innerHTML=svg;
+
+  const rec=document.createElement('div');rec.className='card';
+  rec.innerHTML='<div class="q">最近记录</div>';
+  const all=cravings.slice().sort((a,b)=>b.ts-a.ts).slice(0,8);
+  if(!all.length)rec.innerHTML+='<div class="muted">还没有记录。</div>';
+  all.forEach(c=>{
+    const t=c.answer==='yes'?('想了 · '+LVLTXT[c.level]):'没想';
+    rec.innerHTML+='<div class="rec-item"><span>'+t+'</span><span class="t">'+fmtFull(c.ts)+'</span></div>';
+  });
+  box.appendChild(rec);
+}
+function setRange(r){curRange=r;renderProg();}
+function renderDone(box){
+  const card=document.createElement('div');card.className='card';
+  card.innerHTML='<div class="q">做过的事</div><div class="muted" style="margin-bottom:8px">做完并且评价过，才算一条证据。</div>';
+  const done=events.filter(e=>e.status==='done').sort((a,b)=>b.ts-a.ts);
+  if(!done.length)card.innerHTML+='<div class="muted">还没有。去首页做一件「我的事」，做完回来评价。</div>';
+  done.forEach(ev=>{
+    card.innerHTML+='<div class="rec-item"><div style="flex:1"><div>'+esc(ev.itemName)
+      +'<span class="badge'+(ev.useful==='no'?' no':'')+'">'+(ev.useful==='yes'?'有用':ev.useful==='no'?'没用':'已做')+'</span></div>'
+      +(ev.feeling?'<div class="muted">'+esc(ev.feeling)+'</div>':'')+'</div>'
+      +'<div class="t">'+fmt(ev.ts)+'</div>'
+      +'<div style="flex-basis:100%"><span class="lnk" onclick="undoDone(\''+ev.id+'\')">撤回</span></div></div>';
+  });
+  box.appendChild(card);
+}
+
+/* ===== 我的（身份页） ===== */
+const EMOJIS=['🌱','🌿','🌸','🦋','🌊','🔥','🌙','☀️','🪨','🕊️'];
+const ROLE_SUG=['产品经理','正在重建的自己','INFJ','爱学习的人','一个人也能过好'];
+const TRIG_SUG=['他冷战','看到旧回忆的地方','深夜','他发了朋友圈','等不到回复'];
+const QUOTE_SUG=['你值得被好好对待','一个人也能有很丰富的生活','先护好自己，才能被尊重','这不是失去，是归还给自己','权力是最好的补品'];
+function renderMe(){
+  renderProfile();renderRoles();renderQuotes();
+}
+function renderProfile(){
+  const p=profile;
+  $('#profileCard').innerHTML=
+    '<div style="display:flex;align-items:center;gap:14px">'
+    +'<div style="width:56px;height:56px;border-radius:50%;background:#f0e6dc;display:flex;align-items:center;justify-content:center;font-size:28px">'+p.emoji+'</div>'
+    +'<div style="flex:1"><div style="font-size:17px;font-weight:600">'+esc(p.name)+'</div><div class="muted">'+esc(p.sign)+'</div></div>'
+    +'<span class="lnk" onclick="editProfile()">编辑</span></div>';
+}
+function editProfile(){
+  const p=profile;let em=p.emoji;
+  openSheet('<h3>编辑我的</h3>'
+    +'<div class="fld"><label>头像</label><div class="em-row" id="emRow">'+EMOJIS.map(e=>'<div class="em'+(e===em?' on':'')+'" data-v="'+e+'">'+e+'</div>').join('')+'</div></div>'
+    +'<div class="fld"><label>名称</label><input type="text" id="pfName" value="'+esc(p.name)+'"></div>'
+    +'<div class="fld"><label>个性签名</label><input type="text" id="pfSign" value="'+esc(p.sign)+'"></div>'
+    +'<button class="btn btn-accent" onclick="saveProfile()">保存</button>'
+    +'<div style="height:8px"></div><button class="btn btn-line" onclick="closeMask()">取消</button>');
+  document.querySelectorAll('#emRow .em').forEach(e=>e.onclick=()=>{
+    document.querySelectorAll('#emRow .em').forEach(x=>x.classList.remove('on'));
+    e.classList.add('on');em=e.dataset.v;});
+  window.__em=()=>em;
+}
+function saveProfile(){
+  profile.emoji=window.__em?window.__em():profile.emoji;
+  profile.name=($('#pfName').value||'').trim()||'我';
+  profile.sign=($('#pfSign').value||'').trim();
+  save(LS_P,profile);closeMask();renderMe();toast('已保存');
+}
+function tagList(arr,field){return arr.length?arr.map((t,i)=>'<span class="tag">'+esc(t)+'<i onclick="delTag(\''+field+'\','+i+')">×</i></span>').join(''):'<div class="muted">还没有，添加一条。</div>';}
+function delTag(f,i){profile[f].splice(+i,1);save(LS_P,profile);renderMe();}
+function renderRoles(){
+  $('#rolesCard').innerHTML=
+    '<div class="q">我的角色</div><div style="margin-bottom:10px">'+tagList(profile.roles,'roles')+'</div>'
+    +'<div class="chips" style="margin-bottom:6px">'+ROLE_SUG.filter(s=>profile.roles.indexOf(s)<0).map(s=>'<div class="chip" onclick="addRole(\''+s+'\')">+ '+s+'</div>').join('')+'</div>'
+    +'<button class="btn btn-line btn-sm" style="width:100%;margin-top:6px" onclick="addCustom(\'roles\',\'添加一个角色\')">＋ 自己写</button>'
+    +'<hr>'
+    +'<div class="q">我的期望</div><div style="margin-bottom:10px">'+tagList(profile.expects,'expects')+'</div>'
+    +'<button class="btn btn-line btn-sm" style="width:100%" onclick="addCustom(\'expects\',\'想去哪 / 想成为谁\')">＋ 添加期望</button>'
+    +'<hr>'
+    +'<div class="q">影响我的事</div><div class="muted" style="margin-bottom:8px">什么会让我动摇、反复、难过？看清它，才不被牵着走。</div>'
+    +'<div style="margin-bottom:10px">'+tagList(profile.triggers,'triggers')+'</div>'
+    +'<div class="chips" style="margin-bottom:6px">'+TRIG_SUG.filter(s=>profile.triggers.indexOf(s)<0).map(s=>'<div class="chip" onclick="addTrigger(\''+s+'\')">+ '+s+'</div>').join('')+'</div>'
+    +'<button class="btn btn-line btn-sm" style="width:100%;margin-top:6px" onclick="addCustom(\'triggers\',\'什么会影响我\')">＋ 自己写</button>';
+}
+function renderQuotes(){
+  $('#quotesCard').innerHTML=
+    '<div class="q">鼓励我的金句</div>'
+    +profile.quotes.map((q,i)=>'<div class="rec-item"><span style="flex:1">'+esc(q)+'</span><span class="lnk" onclick="delQuote('+i+')">删除</span></div>').join('')
+    +(profile.quotes.length?'':'<div class="muted">还没有，收藏或写一句给自己的话。</div>')
+    +'<hr><div class="chips">'+QUOTE_SUG.filter(s=>profile.quotes.indexOf(s)<0).map(s=>'<div class="chip" onclick="addQuote(\''+s+'\')">+ '+s+'</div>').join('')+'</div>'
+    +'<button class="btn btn-line btn-sm" style="width:100%;margin-top:10px" onclick="addCustom(\'quotes\',\'写一句给自己的话\')">＋ 自己写</button>';
+}
+function addRole(v){if(profile.roles.indexOf(v)<0){profile.roles.push(v);save(LS_P,profile);renderMe();}}
+function addTrigger(v){if(profile.triggers.indexOf(v)<0){profile.triggers.push(v);save(LS_P,profile);renderMe();}}
+function addQuote(v){if(profile.quotes.indexOf(v)<0){profile.quotes.push(v);save(LS_P,profile);renderMe();}}
+function delTag(i){profile.roles.splice(+i,1);save(LS_P,profile);renderMe();}
+function delQuote(i){profile.quotes.splice(+i,1);save(LS_P,profile);renderMe();}
+function addCustom(field,ph){
+  openSheet('<h3>'+({roles:'添加角色',expects:'添加期望',triggers:'添加影响我的事',quotes:'添加金句'}[field])+'</h3>'
+    +'<div class="fld"><input type="text" id="cv" placeholder="'+ph+'"></div>'
+    +'<button class="btn btn-accent" onclick="saveCustom(\''+field+'\')">添加</button>'
+    +'<div style="height:8px"></div><button class="btn btn-line" onclick="closeMask()">取消</button>');
+}
+function saveCustom(f){const v=($('#cv').value||'').trim();if(!v){toast('写点什么吧');return;}
+  profile[f].push(v);save(LS_P,profile);closeMask();renderMe();}
+
+/* ===== 数据：导出 / 导入 / 清空 ===== */
+function download(name,text,type){
+  const b=new Blob([text],{type:type||'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function exportCSV(){
+  let rows=[['类型','时间','内容','强度/评价','备注']];
+  cravings.slice().sort((a,b)=>a.ts-b.ts).forEach(c=>{
+    rows.push(['想念',fmtFull(c.ts),c.answer==='yes'?'想了':'没想',c.answer==='yes'?LVLTXT[c.level]:'','']);
+  });
+  events.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
+    rows.push(['我的事',fmtFull(e.ts),e.itemName,e.status==='done'?(e.useful==='yes'?'有用':e.useful==='no'?'没用':'已做'):'进行中',e.feeling||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  download('归自己_'+fmt(Date.now()).replace('/','-')+'.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+  toast('已导出 CSV，可贴入飞书表');
+}
+function exportAll(){
+  const data={v:3,exportedAt:new Date().toLocaleString('zh-CN'),cravings,mythings,events,profile};
+  download('归自己_备份_'+fmtFull(Date.now()).replace(/[\/: ]/g,'-')+'.json',JSON.stringify(data,null,2),'application/json');
+  toast('已导出备份，存到飞书即可');
+}
+$('#impFile').onchange=function(){
+  const f=this.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!confirm('导入将覆盖当前设备上的全部数据，继续？'))return;
+      cravings=d.cravings||[];mythings=d.mythings||[];events=d.events||[];profile=d.profile||profile;
+      migrate();save(LS_C,cravings);save(LS_M,mythings);save(LS_E,events);save(LS_P,profile);
+      renderAll();toast('导入成功');
+    }catch(e){toast('文件格式不对');}
+  };
+  r.readAsText(f);this.value='';
+};
+function clearAll(){
+  if(confirm('确定清空全部数据？此操作不可恢复，建议先导出备份。')){
+    if(!confirm('再确认一次：真的清空？'))return;
+    cravings=[];events=[];mythings=[];profile={emoji:'🌱',name:'我',sign:'我在重建自己',roles:[],expects:[],triggers:[],quotes:[]};
+    save(LS_C,cravings);save(LS_M,mythings);save(LS_E,events);save(LS_P,profile);
+    missSessionId=null;missSel={answer:null,level:null};editingMiss=false;
+    renderAll();toast('已清空');
+  }
+}
+
+/* ===== 启动 ===== */
+function renderAll(){renderMissCard();renderHomeMyThings();renderProg();renderMe();}
+(function init(){
+  const now=Date.now(),d=new Date(now);
+  $('#headSub').textContent=fmt(now)+' '+WK[d.getDay()]+' · 我在回到自己的路上';
+  renderAll();
+})();
+</script>
+</body>
+</html>
