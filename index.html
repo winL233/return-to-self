@@ -138,7 +138,12 @@ hr{border:none;border-top:1px solid #f2eee9;margin:14px 0}
       <div class="card" id="quotesCard"></div>
       <div class="card">
         <div class="q">设置</div>
-        <button class="btn btn-line" style="margin-bottom:10px" onclick="exportCSV()">导出 CSV（贴入飞书表）</button>
+        <div class="muted" style="margin-bottom:6px">我的用户 ID —— 多人共用同一张飞书表时用来区分彼此</div>
+        <input type="text" id="uidInput" placeholder="给自己起个 ID，如 awin" style="width:100%;padding:11px 12px;border:1px solid #e3ddd4;border-radius:12px;background:#fff;font-size:15px;outline:none;margin-bottom:8px">
+        <button class="btn btn-line btn-sm" style="width:100%;margin-bottom:14px" onclick="saveUid()">保存 ID</button>
+        <button class="btn btn-accent" style="margin-bottom:8px" onclick="exportFeishu()">⬇ 导出飞书表 CSV（4 张）</button>
+        <div class="muted" style="margin-bottom:12px">导出后到飞书多维表格每张表右上角「⋯ → 导入数据」上传对应文件即可。</div>
+        <button class="btn btn-line" style="margin-bottom:10px" onclick="exportCSV()">导出单张合并 CSV（旧版）</button>
         <button class="btn btn-line" style="margin-bottom:10px" onclick="exportAll()">导出全部备份（JSON）</button>
         <button class="btn btn-line" style="margin-bottom:10px" onclick="$('#impFile').click()">导入备份（换设备用）</button>
         <button class="btn btn-line danger" style="margin-bottom:10px;color:#c07070" onclick="clearAll()">清空全部数据</button>
@@ -188,7 +193,11 @@ if(mythings===null){
   save(LS_M,mythings);
 }
 if(!profile){
-  profile={emoji:'🌱',name:'我',sign:'我在重建自己',roles:[],expects:[],triggers:[],quotes:[]};
+  profile={emoji:'🌱',name:'我',sign:'我在重建自己',roles:[],expects:[],triggers:[],quotes:[],userId:''};
+  save(LS_P,profile);
+}
+if(!profile.userId){
+  profile.userId='u_'+Math.random().toString(36).slice(2,8);
   save(LS_P,profile);
 }
 
@@ -351,7 +360,7 @@ function openEval(eid){
 function setUseful(v){curUseful=v;const y=$('#ufYes'),n=$('#ufNo');if(y){y.classList.toggle('on',v==='yes');n.classList.toggle('on',v==='no');}}
 function saveEval(){
   const ev=events.find(e=>e.id===curEvalId);if(!ev){closeMask();return;}
-  ev.status='done';ev.useful=curUseful||null;ev.feeling=($('#evFeel').value||'').trim();ev.ts=Date.now();
+  ev.status='done';ev.useful=curUseful||null;ev.feeling=($('#evFeel').value||'').trim();ev.doneTs=Date.now();
   save(LS_E,events);closeMask();renderHomeMyThings();toast('记下了：这是你自己做的 ✦');
 }
 
@@ -472,6 +481,12 @@ const TRIG_SUG=['他冷战','看到旧回忆的地方','深夜','他发了朋友
 const QUOTE_SUG=['你值得被好好对待','一个人也能有很丰富的生活','先护好自己，才能被尊重','这不是失去，是归还给自己','权力是最好的补品'];
 function renderMe(){
   renderProfile();renderRoles();renderQuotes();
+  const ui=$('#uidInput'); if(ui&&document.activeElement!==ui) ui.value=profile.userId||'';
+}
+function saveUid(){
+  const v=($('#uidInput').value||'').trim();
+  if(!v){toast('请填一个 ID');return;}
+  profile.userId=v;save(LS_P,profile);toast('已保存：'+v);
 }
 function renderProfile(){
   const p=profile;
@@ -527,7 +542,6 @@ function renderQuotes(){
 function addRole(v){if(profile.roles.indexOf(v)<0){profile.roles.push(v);save(LS_P,profile);renderMe();}}
 function addTrigger(v){if(profile.triggers.indexOf(v)<0){profile.triggers.push(v);save(LS_P,profile);renderMe();}}
 function addQuote(v){if(profile.quotes.indexOf(v)<0){profile.quotes.push(v);save(LS_P,profile);renderMe();}}
-function delTag(i){profile.roles.splice(+i,1);save(LS_P,profile);renderMe();}
 function delQuote(i){profile.quotes.splice(+i,1);save(LS_P,profile);renderMe();}
 function addCustom(field,ph){
   openSheet('<h3>'+({roles:'添加角色',expects:'添加期望',triggers:'添加影响我的事',quotes:'添加金句'}[field])+'</h3>'
@@ -556,6 +570,40 @@ function exportCSV(){
   const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   download('归自己_'+fmt(Date.now()).replace('/','-')+'.csv','\ufeff'+csv,'text/csv;charset=utf-8');
   toast('已导出 CSV，可贴入飞书表');
+}
+function pad2(n){return ('0'+n).slice(-2);}
+function dtLocal(ts){const d=new Date(ts);return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());}
+function csvOf(rows){return '\ufeff'+rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n');}
+function exportFeishu(){
+  const uid=profile.userId||'anonymous';
+  let ok=0;
+  // 表1 想念记录
+  let r1=[['用户ID','记录时间','是否想念','程度']];
+  cravings.slice().sort((a,b)=>a.ts-b.ts).forEach(c=>{
+    r1.push([uid,dtLocal(c.ts),c.answer==='yes'?'想':'不想',c.answer==='yes'?LVLTXT[c.level]:'']);
+  });
+  if(r1.length>1){download('飞书_想念记录.csv',csvOf(r1),'text/csv;charset=utf-8');ok++;}
+  // 表2 我的事
+  let r2=[['事项名称','用户ID','类型','描述','创建时间']];
+  mythings.forEach(m=>{r2.push([m.name,uid,m.cat||'',m.desc||'',m.ts?dtLocal(m.ts):'']);});
+  if(r2.length>1){download('飞书_我的事.csv',csvOf(r2),'text/csv;charset=utf-8');ok++;}
+  // 表3 做过的事
+  let r3=[['事项名称','用户ID','类型','开始时间','完成时间','是否有用','体会']];
+  events.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
+    const m=mythings.find(x=>x.id===e.itemId);
+    r3.push([e.itemName,uid,(m&&m.cat)||'',dtLocal(e.ts),
+      e.status==='done'&&e.doneTs?dtLocal(e.doneTs):'',
+      e.status==='done'?(e.useful==='yes'?'有用':e.useful==='no'?'没用':''):'',
+      e.feeling||'']);
+  });
+  if(r3.length>1){download('飞书_做过的事.csv',csvOf(r3),'text/csv;charset=utf-8');ok++;}
+  // 表4 身份档案
+  let r4=[['昵称','用户ID','头像','签名','角色','期望','影响我的事','金句','更新时间']];
+  r4.push([profile.name||'',uid,profile.emoji||'',profile.sign||'',
+    (profile.roles||[]).join('、'),(profile.expects||[]).join('、'),
+    (profile.triggers||[]).join('、'),(profile.quotes||[]).join(' | '),dtLocal(Date.now())]);
+  download('飞书_身份档案.csv',csvOf(r4),'text/csv;charset=utf-8');ok++;
+  toast('已导出 '+ok+' 个 CSV，对应飞书 4 张表');
 }
 function exportAll(){
   const data={v:3,exportedAt:new Date().toLocaleString('zh-CN'),cravings,mythings,events,profile};
